@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Search, RefreshCw, Eye, Edit2, ExternalLink, Calendar, Tag, User, TrendingUp, Plus, Save, X } from 'lucide-react';
+const Search = () => <span>🔍</span>;
+const RefreshCw = ({ className }) => <span className={className}>🔄</span>;
+const Eye = ({ className }) => <span className={className}>👁️</span>;
+const Edit2 = ({ className }) => <span className={className}>✏️</span>;
+const ExternalLink = ({ className }) => <span className={className}>🔗</span>;
+const Calendar = ({ className }) => <span className={className}>📅</span>;
+const Tag = ({ className }) => <span className={className}>🏷️</span>;
+const User = ({ className }) => <span className={className}>👤</span>;
+const TrendingUp = ({ className }) => <span className={className}>📈</span>;
+const Plus = ({ className }) => <span className={className}>➕</span>;
+const Save = ({ className }) => <span className={className}>💾</span>;
+const X = ({ className }) => <span className={className}>❌</span>;
 
 export default function Home() {
   const [news, setNews] = useState([]);
