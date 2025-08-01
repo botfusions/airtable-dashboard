@@ -80,20 +80,16 @@ export default function Home() {
     setEditData({ id, field, value: currentValue });
   };
 
-  const saveEdit = async () => {
-    try {
-      const response = await fetch('/api/airtable', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: editData.id,
-         body: JSON.stringify({
-  id: editData.id,
-  fields: Object.assign({}, { [editData.field]: editData.value })
-})
-      });
+  const response = await fetch('/api/airtable', {
+  method: 'PATCH',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    id: editData.id,
+    fields: { [editData.field]: editData.value }
+  })
+});
       
       if (response.ok) {
         setNews(prev => prev.map(item => 
