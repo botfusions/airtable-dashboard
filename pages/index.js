@@ -89,8 +89,10 @@ export default function Home() {
         },
         body: JSON.stringify({
           id: editData.id,
-          fields: { [editData.field]: editData.value }
-        })
+         body: JSON.stringify({
+  id: editData.id,
+  fields: Object.assign({}, { [editData.field]: editData.value })
+})
       });
       
       if (response.ok) {
