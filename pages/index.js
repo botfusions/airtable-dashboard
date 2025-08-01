@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+
+// Basit ikon componentleri - lucide-react yerine
 const Search = () => <span>🔍</span>;
 const RefreshCw = ({ className }) => <span className={className}>🔄</span>;
 const Eye = ({ className }) => <span className={className}>👁️</span>;
@@ -20,13 +22,13 @@ export default function Home() {
   const [editData, setEditData] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [newRecord, setNewRecord] = useState({
-    'Başlık': '',
-    'Özet': '',
-    'Yazar': '',
-    'Kategori': '',
-    'Durum': 'Taslak',
-    'URL': '',
-    'Etiketler': []
+    Başlık: '',
+    Özet: '',
+    Yazar: '',
+    Kategori: '',
+    Durum: 'Taslak',
+    URL: '',
+    Etiketler: []
   });
   const [stats, setStats] = useState({
     total: 0,
@@ -51,10 +53,10 @@ export default function Home() {
         
         setStats({
           total: formattedData.length,
-          published: formattedData.filter(item => item['Durum'] === 'Yayınlandı').length,
-          draft: formattedData.filter(item => item['Durum'] === 'Taslak').length,
+          published: formattedData.filter(item => item.Durum === 'Yayınlandı').length,
+          draft: formattedData.filter(item => item.Durum === 'Taslak').length,
           thisWeek: formattedData.filter(item => {
-            const itemDate = new Date(item['Tarih']);
+            const itemDate = new Date(item.Tarih);
             const weekAgo = new Date();
             weekAgo.setDate(weekAgo.getDate() - 7);
             return itemDate >= weekAgo;
@@ -121,8 +123,8 @@ export default function Home() {
         body: JSON.stringify({
           fields: {
             ...newRecord,
-            'Tarih': new Date().toISOString().split('T')[0],
-            'Görüntülenme': 0
+            Tarih: new Date().toISOString().split('T')[0],
+            Görüntülenme: 0
           }
         })
       });
@@ -131,13 +133,13 @@ export default function Home() {
         await fetchData();
         setShowAddForm(false);
         setNewRecord({
-          'Başlık': '',
-          'Özet': '',
-          'Yazar': '',
-          'Kategori': '',
-          'Durum': 'Taslak',
-          'URL': '',
-          'Etiketler': []
+          Başlık: '',
+          Özet: '',
+          Yazar: '',
+          Kategori: '',
+          Durum: 'Taslak',
+          URL: '',
+          Etiketler: []
         });
       }
     } catch (error) {
@@ -294,8 +296,8 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Başlık</label>
                   <input
                     type="text"
-                    value={newRecord['Başlık']}
-                    onChange={(e) => setNewRecord({...newRecord, 'Başlık': e.target.value})}
+                    value={newRecord.Başlık}
+                    onChange={(e) => setNewRecord({...newRecord, Başlık: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -304,8 +306,8 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Yazar</label>
                   <input
                     type="text"
-                    value={newRecord['Yazar']}
-                    onChange={(e) => setNewRecord({...newRecord, 'Yazar': e.target.value})}
+                    value={newRecord.Yazar}
+                    onChange={(e) => setNewRecord({...newRecord, Yazar: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -313,8 +315,8 @@ export default function Home() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
                   <select
-                    value={newRecord['Kategori']}
-                    onChange={(e) => setNewRecord({...newRecord, 'Kategori': e.target.value})}
+                    value={newRecord.Kategori}
+                    onChange={(e) => setNewRecord({...newRecord, Kategori: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Kategori Seçin</option>
@@ -329,8 +331,8 @@ export default function Home() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Durum</label>
                   <select
-                    value={newRecord['Durum']}
-                    onChange={(e) => setNewRecord({...newRecord, 'Durum': e.target.value})}
+                    value={newRecord.Durum}
+                    onChange={(e) => setNewRecord({...newRecord, Durum: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="Taslak">Taslak</option>
@@ -343,8 +345,8 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">URL</label>
                   <input
                     type="url"
-                    value={newRecord['URL']}
-                    onChange={(e) => setNewRecord({...newRecord, 'URL': e.target.value})}
+                    value={newRecord.URL}
+                    onChange={(e) => setNewRecord({...newRecord, URL: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -352,8 +354,8 @@ export default function Home() {
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Özet</label>
                   <textarea
-                    value={newRecord['Özet']}
-                    onChange={(e) => setNewRecord({...newRecord, 'Özet': e.target.value})}
+                    value={newRecord.Özet}
+                    onChange={(e) => setNewRecord({...newRecord, Özet: e.target.value})}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -416,19 +418,19 @@ export default function Home() {
                         ) : (
                           <h3 
                             className="font-medium text-gray-900 mb-1 cursor-pointer hover:text-blue-600"
-                            onClick={() => handleCellEdit(item.id, 'Başlık', item['Başlık'])}
+                            onClick={() => handleCellEdit(item.id, 'Başlık', item.Başlık)}
                           >
-                            {item['Başlık']}
+                            {item.Başlık}
                           </h3>
                         )}
                         
                         <p className="text-sm text-gray-600 line-clamp-2">
-                          {item['Özet']}
+                          {item.Özet}
                         </p>
                         
-                        {item['Etiketler'] && Array.isArray(item['Etiketler']) && (
+                        {item.Etiketler && Array.isArray(item.Etiketler) && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {item['Etiketler'].map((tag, index) => (
+                            {item.Etiketler.map((tag, index) => (
                               <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">
                                 <Tag className="w-3 h-3 mr-1" />
                                 {tag}
@@ -441,35 +443,35 @@ export default function Home() {
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <User className="w-4 h-4 mr-2 text-gray-400" />
-                        <span className="text-sm text-gray-900">{item['Yazar']}</span>
+                        <span className="text-sm text-gray-900">{item.Yazar}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(item['Kategori'])}`}>
-                        {item['Kategori']}
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(item.Kategori)}`}>
+                        {item.Kategori}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(item['Durum'])}`}>
-                        {item['Durum']}
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(item.Durum)}`}>
+                        {item.Durum}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {item['Tarih'] ? new Date(item['Tarih']).toLocaleDateString('tr-TR') : '-'}
+                      {item.Tarih ? new Date(item.Tarih).toLocaleDateString('tr-TR') : '-'}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <Eye className="w-4 h-4 mr-1 text-gray-400" />
                         <span className="text-sm font-medium text-gray-900">
-                          {item['Görüntülenme']?.toLocaleString() || '0'}
+                          {item.Görüntülenme?.toLocaleString() || '0'}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        {item['URL'] && (
+                        {item.URL && (
                           
-                            href={item['URL']}
+                            href={item.URL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -479,7 +481,7 @@ export default function Home() {
                           </a>
                         )}
                         <button
-                          onClick={() => handleCellEdit(item.id, 'Başlık', item['Başlık'])}
+                          onClick={() => handleCellEdit(item.id, 'Başlık', item.Başlık)}
                           className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                           title="Düzenle"
                         >
