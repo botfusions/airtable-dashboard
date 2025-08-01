@@ -24,7 +24,6 @@ export default function Home() {
     thisWeek: 0
   });
 
-  // Airtable'dan verileri çek
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -39,7 +38,6 @@ export default function Home() {
         
         setNews(formattedData);
         
-        // İstatistikleri hesapla
         setStats({
           total: formattedData.length,
           published: formattedData.filter(item => item['Durum'] === 'Yayınlandı').length,
@@ -60,12 +58,10 @@ export default function Home() {
 
   useEffect(() => {
     fetchData();
-    // 30 saniyede bir otomatik yenile
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Inline edit fonksiyonu
   const handleCellEdit = (id, field, currentValue) => {
     setEditingId(`${id}-${field}`);
     setEditData({ id, field, value: currentValue });
@@ -85,7 +81,6 @@ export default function Home() {
       });
       
       if (response.ok) {
-        // Tabloyu güncelle
         setNews(prev => prev.map(item => 
           item.id === editData.id 
             ? { ...item, [editData.field]: editData.value }
@@ -105,7 +100,6 @@ export default function Home() {
     setEditData({});
   };
 
-  // Yeni kayıt ekleme
   const addNewRecord = async () => {
     try {
       const response = await fetch('/api/airtable', {
@@ -123,7 +117,7 @@ export default function Home() {
       });
       
       if (response.ok) {
-        await fetchData(); // Tabloyu yenile
+        await fetchData();
         setShowAddForm(false);
         setNewRecord({
           'Başlık': '',
@@ -179,7 +173,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
@@ -209,7 +202,6 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
@@ -260,7 +252,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -274,7 +265,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Add New Record Modal */}
         {showAddForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-6 w-full max-w-2xl mx-4">
@@ -377,7 +367,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* News Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -422,29 +411,9 @@ export default function Home() {
                           </h3>
                         )}
                         
-                        {editingId === `${item.id}-Özet` ? (
-                          <div className="flex items-center gap-2">
-                            <textarea
-                              value={editData.value}
-                              onChange={(e) => setEditData({...editData, value: e.target.value})}
-                              className="px-2 py-1 border border-gray-300 rounded text-sm flex-1"
-                              rows={2}
-                            />
-                            <button onClick={saveEdit} className="text-green-600 hover:text-green-800">
-                              <Save className="w-4 h-4" />
-                            </button>
-                            <button onClick={cancelEdit} className="text-red-600 hover:text-red-800">
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          <p 
-                            className="text-sm text-gray-600 line-clamp-2 cursor-pointer hover:text-blue-600"
-                            onClick={() => handleCellEdit(item.id, 'Özet', item['Özet'])}
-                          >
-                            {item['Özet']}
-                          </p>
-                        )}
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {item['Özet']}
+                        </p>
                         
                         {item['Etiketler'] && Array.isArray(item['Etiketler']) && (
                           <div className="flex flex-wrap gap-1 mt-2">
@@ -461,73 +430,74 @@ export default function Home() {
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <User className="w-4 h-4 mr-2 text-gray-400" />
-                        {editingId === `${item.id}-Yazar` ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={editData.value}
-                              onChange={(e) => setEditData({...editData, value: e.target.value})}
-                              className="px-2 py-1 border border-gray-300 rounded text-sm"
-                              onKeyPress={(e) => e.key === 'Enter' && saveEdit()}
-                            />
-                            <button onClick={saveEdit} className="text-green-600 hover:text-green-800">
-                              <Save className="w-4 h-4" />
-                            </button>
-                            <button onClick={cancelEdit} className="text-red-600 hover:text-red-800">
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ) : (
-                          <span 
-                            className="text-sm text-gray-900 cursor-pointer hover:text-blue-600"
-                            onClick={() => handleCellEdit(item.id, 'Yazar', item['Yazar'])}
-                          >
-                            {item['Yazar']}
-                          </span>
-                        )}
+                        <span className="text-sm text-gray-900">{item['Yazar']}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {editingId === `${item.id}-Kategori` ? (
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={editData.value}
-                            onChange={(e) => setEditData({...editData, value: e.target.value})}
-                            className="px-2 py-1 border border-gray-300 rounded text-sm"
-                          >
-                            <option value="Teknoloji">Teknoloji</option>
-                            <option value="Enerji">Enerji</option>
-                            <option value="Pazarlama">Pazarlama</option>
-                            <option value="Ekonomi">Ekonomi</option>
-                            <option value="Sağlık">Sağlık</option>
-                          </select>
-                          <button onClick={saveEdit} className="text-green-600 hover:text-green-800">
-                            <Save className="w-4 h-4" />
-                          </button>
-                          <button onClick={cancelEdit} className="text-red-600 hover:text-red-800">
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <span 
-                          className={`inline-flex px-3 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 ${getCategoryColor(item['Kategori'])}`}
-                          onClick={() => handleCellEdit(item.id, 'Kategori', item['Kategori'])}
-                        >
-                          {item['Kategori']}
-                        </span>
-                      )}
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(item['Kategori'])}`}>
+                        {item['Kategori']}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
-                      {editingId === `${item.id}-Durum` ? (
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={editData.value}
-                            onChange={(e) => setEditData({...editData, value: e.target.value})}
-                            className="px-2 py-1 border border-gray-300 rounded text-sm"
+                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(item['Durum'])}`}>
+                        {item['Durum']}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {item['Tarih'] ? new Date(item['Tarih']).toLocaleDateString('tr-TR') : '-'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <Eye className="w-4 h-4 mr-1 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-900">
+                          {item['Görüntülenme']?.toLocaleString() || '0'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        {item['URL'] && (
+                          
+                            href={item['URL']}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Haberi Görüntüle"
                           >
-                            <option value="Taslak">Taslak</option>
-                            <option value="İnceleme">İnceleme</option>
-                            <option value="Yayınlandı">Yayınlandı</option>
-                          </select>
-                          <button onClick={saveEdit} className="text-green-600 hover:text-green-800">
-                            <Save className="
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                        <button
+                          onClick={() => handleCellEdit(item.id, 'Başlık', item['Başlık'])}
+                          className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                          title="Düzenle"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {filteredNews.length === 0 && !loading && (
+          <div className="text-center py-12">
+            <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {searchTerm ? 'Sonuç bulunamadı' : 'Henüz haber bulunmuyor'}
+            </h3>
+            <p className="text-gray-600">
+              {searchTerm 
+                ? 'Arama kriterlerinizi değiştirip tekrar deneyin.' 
+                : 'İlk haberinizi eklemek için "Yeni Haber" butonunu kullanın.'
+              }
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
