@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Botfusions Tanıtım Filmi</title>
+<meta name="description" content="Botfusions'ın ne yaptığını 30 saniyede, 5 sahnede anlatan animasyonlu açıklayıcı.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Manrope:wght@400;600&display=swap">
+<style>
+/* Tek görsel dünya: koyu gece moru üzerinde Botfusions renkleri (bilinçli olarak tek tema) */
+:root{
+  --bg:#0B0816; --bg2:#151029; --ink:#F6F2FF; --mute:#B6AAD3; --line:rgba(246,242,255,.12);
+  --p:#A855F7; --pd:#7C3AED; --b:#3B82F6; --o:#F97316; --y:#FDE047;
+  --display:"Outfit","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Manrope","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);overflow:hidden;font-family:var(--body);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;overflow:hidden;background:var(--bg);transform-origin:center;will-change:transform}
+body.p #stage{width:1080px;height:1920px}
+.abs{position:absolute}
+.will{will-change:transform,opacity,filter}
+
+/* arka plan */
+#grid{inset:0;background-image:radial-gradient(rgba(246,242,255,.07) 1.2px,transparent 1.2px);background-size:48px 48px}
+.orb{width:1100px;height:1100px;border-radius:50%;filter:blur(40px)}
+#orb1{background:radial-gradient(circle,rgba(168,85,247,.42),rgba(168,85,247,0) 65%)}
+#orb2{background:radial-gradient(circle,rgba(59,130,246,.30),rgba(59,130,246,0) 65%)}
+#orb3{background:radial-gradient(circle,rgba(249,115,22,.30),rgba(249,115,22,0) 65%)}
+#brandtag{left:72px;top:56px;font:600 22px/1 var(--display);letter-spacing:.24em;color:var(--mute)}
+#brandtag b{color:var(--p);font-weight:600}
+#sceneno{right:72px;top:56px;font:600 22px/1 var(--display);letter-spacing:.14em;color:var(--mute);font-variant-numeric:tabular-nums}
+body.p #brandtag{left:64px;top:72px}
+body.p #sceneno{right:64px;top:72px}
+
+.scene{inset:0}
+.eyebrow{font:600 24px/1 var(--display);letter-spacing:.28em;color:var(--o);text-transform:uppercase}
+h1,h2,h3,p{margin:0}
+.head{font:800 104px/1.0 var(--display);letter-spacing:-.025em}
+.head span{display:block}
+.hl{color:var(--p)}
+.sub{font:400 34px/1.45 var(--body);color:var(--mute);max-width:32ch}
+
+/* sahne 1–2: başlık + AI sohbet kartı */
+#heads{left:140px;top:300px;width:860px;height:520px}
+#h1a,#h1b{left:0;top:0;width:100%}
+#h1b .sub{margin-top:36px}
+#card{left:1060px;top:190px;width:720px;border-radius:28px 28px 28px 6px;background:linear-gradient(180deg,#1C1535,#130E26);border:1px solid var(--line);box-shadow:0 40px 90px rgba(0,0,0,.45);padding:34px 36px 40px}
+body.p #heads{left:80px;top:220px;width:920px}
+body.p #card{left:120px;top:900px;width:840px}
+.chead{display:flex;align-items:center;gap:12px;font:600 22px/1 var(--display);color:var(--mute);letter-spacing:.06em}
+.chead i{width:12px;height:12px;border-radius:50%;background:var(--b);box-shadow:0 0 14px var(--b)}
+.q{margin:26px 0 0 auto;width:max-content;max-width:100%;background:var(--pd);border-radius:22px 22px 6px 22px;padding:20px 26px;font:600 30px/1.3 var(--body);min-height:79px}
+.caret{display:inline-block;width:3px;height:30px;background:var(--ink);margin-left:3px;vertical-align:-4px}
+#typing{margin-top:24px;display:flex;gap:9px;height:16px}
+#typing i{width:13px;height:13px;border-radius:50%;background:var(--mute)}
+#ans{margin-top:4px}
+#alabel{font:600 24px/1 var(--body);color:var(--mute);margin-bottom:18px}
+#rows{position:relative;height:376px}
+.row{left:0;right:0;height:82px;border-radius:16px;background:rgba(246,242,255,.05);display:flex;align-items:center;gap:22px;padding:0 26px;font:600 32px/1 var(--body)}
+.row b{font:800 30px/1 var(--display);color:var(--mute);width:30px}
+.row.brand{background:transparent;border:2px dashed rgba(249,115,22,.7)}
+#brandsolid{inset:-2px;border-radius:16px;background:linear-gradient(90deg,rgba(168,85,247,.32),rgba(124,58,237,.18));border:2px solid var(--p);box-shadow:0 0 40px rgba(168,85,247,.45)}
+.row.brand > *{position:relative}
+#brand > #brandsolid{position:absolute}
+.tag{margin-left:auto;font:800 22px/1 var(--display);letter-spacing:.06em;padding:10px 16px;border-radius:999px}
+#yok{background:rgba(249,115,22,.16);color:var(--o);border:1.5px solid var(--o)}
+#onerildi{background:var(--y);color:#1A1400;position:absolute;right:26px}
+
+/* sahne 3: üç adım */
+#s3top{left:140px;top:170px}
+#s3top h2{margin-top:22px;font:800 88px/1 var(--display);letter-spacing:-.02em}
+#steps{left:140px;top:430px;width:1640px;height:520px}
+#line{left:60px;top:58px;width:1520px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--p),var(--b));transform-origin:left center}
+.step{top:0;width:480px}
+.step:nth-child(2){left:0}.step:nth-child(3){left:580px}.step:nth-child(4){left:1160px}
+.num{width:120px;height:120px;border-radius:32px 32px 32px 8px;background:var(--bg2);border:2px solid var(--line);display:grid;place-items:center;font:800 46px/1 var(--display);color:var(--mute);position:relative}
+.step.on .num{background:var(--p);border-color:var(--p);color:#fff;box-shadow:0 0 50px rgba(168,85,247,.55)}
+.step h3{margin-top:40px;font:800 60px/1 var(--display);letter-spacing:-.015em}
+.step p{margin-top:20px;font:400 30px/1.45 var(--body);color:var(--mute);max-width:24ch}
+.step svg{position:absolute;right:-150px;top:10px;width:110px;height:110px;overflow:visible}
+body.p #s3top{left:80px;top:220px}
+body.p #steps{left:80px;top:520px;width:920px;height:1260px}
+body.p #line{left:58px;top:60px;width:4px;height:1100px;background:linear-gradient(180deg,var(--p),var(--b));transform-origin:center top}
+body.p .step{width:920px;left:0!important}
+body.p .step:nth-child(3){top:420px}body.p .step:nth-child(4){top:840px}
+body.p .step h3{margin-top:0;position:absolute;left:170px;top:22px}
+body.p .step p{position:absolute;left:170px;top:100px;max-width:26ch}
+body.p .step svg{right:-780px;top:5px}
+
+/* sahne 4: kanıt */
+#s4{display:grid;place-items:center;text-align:center}
+#proofwrap{display:flex;flex-direction:column;align-items:center;gap:30px}
+#proofnum{font:800 300px/0.9 var(--display);letter-spacing:-.04em;color:var(--ink);font-variant-numeric:tabular-nums}
+#proofnum .unit{color:var(--p)}
+#proofnum.ph{font-size:190px;color:var(--o);border:6px dashed var(--o);border-radius:40px;padding:40px 70px 50px}
+#prooflabel{font:600 40px/1.35 var(--body);color:var(--mute);max-width:30ch}
+body.p #proofnum{font-size:220px}
+body.p #proofnum.ph{font-size:130px;padding:30px 44px 40px}
+
+/* sahne 5: imza */
+#s5{display:grid;place-items:center;text-align:center}
+#word{font:800 200px/1 var(--display);letter-spacing:-.03em;display:flex}
+#word span{display:inline-block}
+#word .f{color:var(--p)}
+#tagline{margin-top:34px;font:600 40px/1 var(--display);letter-spacing:.2em;color:var(--mute);text-transform:uppercase}
+#url{margin-top:56px;display:inline-block;position:relative;font:800 56px/1 var(--display);color:var(--ink)}
+#urlline{left:0;right:0;bottom:-16px;height:6px;border-radius:3px;background:var(--o);transform-origin:left}
+body.p #word{font-size:128px}
+body.p #tagline{font-size:30px}
+
+/* kontroller (videoya girmez) */
+#ctl{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:rgba(11,8,22,.72);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:5;max-width:calc(100vw - 32px);transition:opacity .5s}
+#ctl.idle{opacity:0}
+#ctl button{appearance:none;border:0;background:transparent;color:var(--ink);font:600 14px/1 var(--body);padding:10px 14px;border-radius:999px;cursor:pointer;min-height:40px}
+#ctl button:hover{background:rgba(246,242,255,.08)}
+#ctl button:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+#play{background:var(--p)!important;min-width:44px}
+.dots{display:flex;gap:4px;padding:0 4px}
+.dots button{width:40px;padding:0!important;display:grid;place-items:center}
+.dots button::after{content:"";width:10px;height:10px;border-radius:50%;background:rgba(246,242,255,.28)}
+.dots button.on::after{background:var(--p);box-shadow:0 0 10px var(--p)}
+#clock{font:600 13px/1 var(--body);color:var(--mute);font-variant-numeric:tabular-nums;padding:0 10px 0 4px;min-width:62px}
+#bar{position:fixed;left:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--p),var(--o));z-index:5}
+@media (max-width:480px){#clock{display:none}#ctl button{padding:10px}}
+</style>
+</head>
+<body>
+<div id="stage" role="img" aria-label="Botfusions açıklayıcı animasyon: sorun, çözüm, üç adım, kanıt ve imza">
+  <div id="grid" class="abs"></div>
+  <div id="orb1" class="abs orb will"></div>
+  <div id="orb2" class="abs orb will"></div>
+  <div id="orb3" class="abs orb will"></div>
+  <div id="brandtag" class="abs">BOT<b>FUSIONS</b> · AI AJAN &amp; GEO</div>
+  <div id="sceneno" class="abs">01 / 05</div>
+
+  <!-- Sahne 1–2: sorun ve çözüm, aynı sohbet kartı üzerinde -->
+  <div id="s12" class="abs scene">
+    <div id="heads" class="abs">
+      <h1 id="h1a" class="abs head">
+        <span class="will">Müşterilerin artık</span>
+        <span class="will">Google'a değil,</span>
+        <span class="will hl">yapay zekâya soruyor.</span>
+      </h1>
+      <div id="h1b" class="abs">
+        <h1 class="head">
+          <span class="will">Botfusions</span>
+          <span class="will">markanı <span class="hl" style="display:inline">AI</span></span>
+          <span class="will">yanıtlarına taşır.</span>
+        </h1>
+        <p class="sub will">AI ajanlar ve GEO (Üretken Motor Optimizasyonu) ile ChatGPT, Gemini ve Perplexity seni önersin.</p>
+      </div>
+    </div>
+    <div id="card" class="abs will">
+      <div class="chead"><i></i>AI ASİSTAN</div>
+      <div class="q"><span id="qtext"></span><span class="caret" id="caret"></span></div>
+      <div id="typing"><i></i><i></i><i></i></div>
+      <div id="ans">
+        <div id="alabel">Yapay zekânın önerdikleri:</div>
+        <div id="rows">
+          <div class="row abs will" data-name="Klinik A"><b>1</b><span>Klinik A</span></div>
+          <div class="row abs will" data-name="Klinik B"><b>2</b><span>Klinik B</span></div>
+          <div class="row abs will" data-name="Klinik C"><b>3</b><span>Klinik C</span></div>
+          <div class="row brand abs will" id="brand"><div id="brandsolid" class="abs"></div><b id="bnum">–</b><span>Senin markan</span><em id="yok" class="tag will">YOK</em><em id="onerildi" class="tag will">✓ ÖNERİLDİ</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sahne 3: üç adım -->
+  <div id="s3" class="abs scene">
+    <div id="s3top" class="abs">
+      <div class="eyebrow will">Nasıl çalışır</div>
+      <h2 class="will">3 adımda görünür ol.</h2>
+    </div>
+    <div id="steps" class="abs">
+      <div id="line" class="abs"></div>
+      <div class="step abs will">
+        <div class="num">01
+          <svg viewBox="-50 -50 100 100" aria-hidden="true"><circle r="44" fill="none" stroke="#A855F7" stroke-opacity=".35" stroke-width="3"/><circle r="26" fill="none" stroke="#A855F7" stroke-opacity=".35" stroke-width="3"/><g id="sweep"><path d="M0 0 L44 0 A44 44 0 0 0 31 -31 Z" fill="#A855F7" fill-opacity=".45"/><line x1="0" y1="0" x2="44" y2="0" stroke="#F6F2FF" stroke-width="3"/></g><circle id="blip" cx="-18" cy="20" r="6" fill="#FDE047"/></svg>
+        </div>
+        <h3>Tara</h3>
+        <p>Markanın ChatGPT, Gemini ve Perplexity yanıtlarındaki yerini ölçeriz.</p>
+      </div>
+      <div class="step abs will">
+        <div class="num">02
+          <svg viewBox="-50 -50 100 100" aria-hidden="true"><g stroke="#3B82F6" stroke-width="5" stroke-linecap="round" stroke-opacity=".5"><line x1="-42" y1="-26" x2="42" y2="-26"/><line x1="-42" y1="0" x2="42" y2="0"/><line x1="-42" y1="26" x2="42" y2="26"/></g><circle id="k1" cy="-26" r="10" fill="#3B82F6"/><circle id="k2" cy="0" r="10" fill="#A855F7"/><circle id="k3" cy="26" r="10" fill="#F97316"/></svg>
+        </div>
+        <h3>Optimize et</h3>
+        <p>İçeriği ve yapılandırılmış veriyi yapay zekânın okuyacağı hâle getiririz.</p>
+      </div>
+      <div class="step abs will">
+        <div class="num">03
+          <svg viewBox="-50 -50 100 100" aria-hidden="true"><g id="loop" fill="none" stroke="#F97316" stroke-width="7" stroke-linecap="round"><path d="M-36 -8 A36 36 0 0 1 30 -20"/><path d="M36 8 A36 36 0 0 1 -30 20"/><path d="M22 -30 L32 -19 L18 -12" stroke-linejoin="round"/><path d="M-22 30 L-32 19 L-18 12" stroke-linejoin="round"/></g></svg>
+        </div>
+        <h3>Otomatikleştir</h3>
+        <p>AI ajanlar görünürlüğünü 7/24 izler ve günceller.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sahne 4: kanıt -->
+  <div id="s4" class="abs scene">
+    <div id="proofwrap">
+      <div class="eyebrow will">Kanıt</div>
+      <div id="proofnum" class="will"></div>
+      <div id="prooflabel" class="will"></div>
+    </div>
+  </div>
+
+  <!-- Sahne 5: imza -->
+  <div id="s5" class="abs scene">
+    <div>
+      <div id="word" aria-label="Botfusions"></div>
+      <div id="tagline" class="will">AI Ajan &amp; GEO Hizmetleri</div>
+      <div id="url" class="will">botfusions.com<i id="urlline" class="abs"></i></div>
+    </div>
+  </div>
+</div>
+
+<div id="ctl">
+  <button id="play" aria-label="Duraklat">❚❚</button>
+  <button id="replay">↺ Baştan</button>
+  <div class="dots" id="dots"></div>
+  <span id="clock">00.0 / 30</span>
+</div>
+<div id="bar"></div>
+
+<script>
+(()=>{
+'use strict';
+// ------------------------------------------------------------------ içerik ayarları
+// KANIT: doğrulanmış rakamını buraya yaz. value sayı olunca sayaç animasyonu devreye girer.
+// Örnek: {value:3, prefix:'', suffix:'x', label:'AI yanıtlarında daha sık önerilme'}
+const PROOF={value:null, prefix:'', suffix:'', label:'[KANIT] Buraya doğrulanmış bir rakam gelecek (ör. AI yanıtlarında görünürlük artışı)'};
+
+const DUR=30, S=[0,6,12,21,26,30];
+const NAMES=['Sorun','Ne yapıyorum','Nasıl çalışır','Kanıt','İmza'];
+const QS=new URLSearchParams(location.search), RENDER=QS.has('render');
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches&&!RENDER;
+const $=id=>document.getElementById(id), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+
+// ------------------------------------------------------------------ easing
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+const E={
+  lin:t=>t,
+  out:t=>1-Math.pow(1-t,3),
+  expo:t=>t>=1?1:1-Math.pow(2,-10*t),
+  inout:t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,
+  back:t=>{const c1=1.5,c3=c1+1,u=t-1;return 1+c3*u*u*u+c1*u*u},
+};
+// a–b aralığında 0→1 ilerleme; hareket azaltma açıksa anında geçer
+const k=(t,a,b,e=E.out)=>REDUCED?(t>=a?1:0):e(clamp((t-a)/(b-a),0,1));
+const lerp=(a,b,x)=>a+(b-a)*x;
+function set(el,{o=1,x=0,y=0,s=1,blur=0,r=0}={}){
+  el.style.opacity=o;
+  el.style.transform=`translate(${x}px,${y}px) scale(${s})${r?` rotate(${r}deg)`:''}`;
+  el.style.filter=blur>.05?`blur(${blur}px)`:'none';
+}
+// giriş: aşağıdan kayarak, bulanıklıktan netleşerek
+function enter(el,t,a,dur=.8,dy=46){const p=k(t,a,a+dur,E.expo);return{o:p,y:(1-p)*dy,blur:(1-p)*10}}
+// çıkış: yukarı kayarak kaybolur
+function leave(st,t,a,dur=.55,dy=-34){const p=k(t,a,a+dur,E.inout);return{o:st.o*(1-p),y:st.y+p*dy,blur:st.blur+p*8,s:st.s||1}}
+
+// ------------------------------------------------------------------ düzen
+let isP=false;
+function layout(){
+  isP=!RENDER&&innerHeight>innerWidth*1.1 || QS.has('v');
+  document.body.classList.toggle('p',isP);
+  const SW=isP?1080:1920, SH=isP?1920:1080;
+  const sc=RENDER?1:Math.min(innerWidth/SW,innerHeight/SH);
+  $('stage').style.transform=`translate(-50%,-50%) scale(${sc})`;
+}
+addEventListener('resize',()=>{layout();draw(T)});
+
+// ------------------------------------------------------------------ öğeler
+const Q="İstanbul'da en güvenilir diş kliniği hangisi?";
+const rows=$$('#rows .row'), ROW=98;
+const steps=$$('.step');
+const word=$('word');
+'BOTFUSIONS'.split('').forEach((c,i)=>{const s=document.createElement('span');s.textContent=c;s.className='will'+(i>=3?' f':'');word.appendChild(s)});
+const letters=$$('span',word);
+const pn=$('proofnum'), pl=$('prooflabel');
+pl.textContent=PROOF.label;
+if(PROOF.value==null){pn.classList.add('ph');pn.textContent='[KANIT]'}
+
+// ------------------------------------------------------------------ çizim: her t için sahnenin tam durumu
+function sceneIdx(t){for(let i=4;i>=0;i--)if(t>=S[i])return i;return 0}
+function draw(t){
+  t=clamp(t,0,DUR);
+  const W=isP?1080:1920, H=isP?1920:1080;
+
+  // arka plan küreleri: sahneye göre renk vurgusu
+  const warm=1-k(t,5.4,7.2,E.inout);           // sorun sahnesinde turuncu gerilim
+  set($('orb1'),{x:W*.55+Math.sin(t*.21)*120-550,y:H*.15+Math.cos(t*.17)*90-550,o:.9});
+  set($('orb2'),{x:-300+Math.cos(t*.19)*140,y:H*.55+Math.sin(t*.23)*110-500,o:.35+.55*(1-warm)});
+  set($('orb3'),{x:W*.6-550+Math.sin(t*.15)*100,y:H*.7-550,o:.85*warm});
+  $('sceneno').textContent=`0${sceneIdx(t)+1} / 05`;
+
+  // ---- Sahne 1–2
+  const s12=$('s12');
+  s12.style.visibility=t<12.2?'visible':'hidden';
+  if(t<12.2){
+    // sahne 1 başlığı
+    $$('#h1a span').forEach((el,i)=>{let st=enter(el,t,.2+i*.28);st=leave(st,t,5.5+i*.06);set(el,st)});
+    // sahne 2 başlığı ve alt metni
+    const h1b=$$('#h1b .head > span');
+    h1b.forEach((el,i)=>{let st=enter(el,t,6.25+i*.22);st=leave(st,t,11.35+i*.05);set(el,st)});
+    {const sb=document.querySelector('#h1b .sub');let st=enter(sb,t,7.6);st=leave(st,t,11.5);set(sb,st)}
+
+    // kart
+    const cp=k(t,.35,1.3,E.expo);
+    let cst={o:cp,x:(1-cp)*80,y:0,blur:(1-cp)*10,s:1};
+    cst=leave(cst,t,11.4,.6,-40);
+    set($('card'),cst);
+
+    // soru yazılıyor
+    const n=Math.round(Q.length*k(t,.9,2.4,E.lin));
+    $('qtext').textContent=Q.slice(0,n);
+    $('caret').style.opacity=(t<2.6&&(Math.floor(t*2.4)%2===0||n<Q.length))?1:0;
+    // "AI yazıyor" noktaları
+    const tp=t>=2.5&&t<3.0;
+    $('typing').style.opacity=tp?1:0;
+    $$('#typing i').forEach((d,i)=>d.style.transform=`translateY(${tp?Math.sin(t*14-i*.9)*-5:0}px)`);
+    set($('alabel'),enter($('alabel'),t,2.9,.5,16));
+
+    // satırlar: sahne 2'de marka 4. sıradan 1. sıraya çıkar
+    const mv=k(t,6.7,7.9,E.inout);
+    rows.forEach((el,i)=>{
+      const brand=i===3;
+      const at=brand?4.0:3.05+i*.28;
+      const p=k(t,at,at+.6,E.expo);
+      const slot=brand?lerp(3,0,mv):i+mv;
+      let x=0;
+      if(brand&&t>4.5&&t<5.3){const q=k(t,4.5,5.3,E.lin);x=Math.sin(q*Math.PI*6)*9*(1-q)}
+      set(el,{o:p,y:slot*ROW+(1-p)*20,x,blur:(1-p)*6});
+      if(!brand)el.querySelector('b').textContent=String(mv>.5?i+2:i+1);
+    });
+    $('bnum').textContent=mv>.5?'1':'–';
+    const solid=k(t,6.8,7.7);
+    $('brandsolid').style.opacity=solid;
+    $('brand').style.borderColor=`rgba(249,115,22,${(.7*(1-solid)).toFixed(3)})`;
+    const yk=k(t,4.45,4.95,E.back)*(1-k(t,6.3,6.7));
+    set($('yok'),{o:Math.min(1,yk*1.2),s:.6+.4*clamp(yk,0,1.2)});
+    const on=k(t,7.9,8.5,E.back);
+    set($('onerildi'),{o:clamp(on,0,1),s:.6+.4*on});
+  }
+
+  // ---- Sahne 3
+  const s3=$('s3');
+  s3.style.visibility=t>=11.8&&t<21.2?'visible':'hidden';
+  if(t>=11.8&&t<21.2){
+    $$('#s3top > *').forEach((el,i)=>{let st=enter(el,t,12.15+i*.2);st=leave(st,t,20.35);set(el,st)});
+    const lp=k(t,13.0,19.3,E.inout);
+    let lo=1-k(t,20.35,20.9);
+    $('line').style.opacity=lo;
+    $('line').style.transform=isP?`scaleY(${lp})`:`scaleX(${lp})`;
+    const A=[13.2,15.4,17.6];
+    steps.forEach((el,i)=>{
+      let st=enter(el,t,A[i],.9,60);st=leave(st,t,20.35+i*.06);set(el,st);
+      const num=el.querySelector('.num');
+      const pop=k(t,A[i]+.1,A[i]+.8,E.back);
+      num.style.transform=`scale(${.55+.45*pop})`;
+      el.classList.toggle('on',(t>=A[i]&&(i===2||t<A[i+1]))||t>=19.6);
+    });
+    // ikon hareketleri
+    document.getElementById('sweep').setAttribute('transform',`rotate(${-t*140})`);
+    document.getElementById('blip').setAttribute('opacity',(.3+.7*Math.max(0,Math.sin(t*2.6))).toFixed(2));
+    ['k1','k2','k3'].forEach((id,i)=>document.getElementById(id).setAttribute('cx',(Math.sin(t*1.7+i*2.1)*30).toFixed(1)));
+    document.getElementById('loop').setAttribute('transform',`rotate(${t*90})`);
+  }
+
+  // ---- Sahne 4
+  const s4=$('s4');
+  s4.style.visibility=t>=20.8&&t<26.2?'visible':'hidden';
+  if(t>=20.8&&t<26.2){
+    const kids=[s4.querySelector('.eyebrow'),pn,pl];
+    kids.forEach((el,i)=>{let st=enter(el,t,21.15+i*.3,.9);
+      if(el===pn){const p=k(t,21.45,22.3,E.back);st.s=.7+.3*p}
+      st=leave(st,t,25.35+i*.05);set(el,st)});
+    if(PROOF.value!=null){
+      const v=PROOF.value*k(t,21.5,23.6,E.expo);
+      const dec=Number.isInteger(PROOF.value)?0:1;
+      pn.innerHTML=`${PROOF.prefix?`<span class="unit">${PROOF.prefix}</span>`:''}${v.toFixed(dec)}${PROOF.suffix?`<span class="unit">${PROOF.suffix}</span>`:''}`;
+    }
+  }
+
+  // ---- Sahne 5
+  const s5=$('s5');
+  s5.style.visibility=t>=25.9?'visible':'hidden';
+  if(t>=25.9){
+    letters.forEach((el,i)=>{const p=k(t,26.15+i*.055,26.95+i*.055,E.back);set(el,{o:clamp(p*1.4,0,1),y:(1-p)*90,blur:Math.max(0,(1-p)*12)})});
+    set($('tagline'),enter($('tagline'),t,27.25));
+    set($('url'),enter($('url'),t,27.6));
+    $('urlline').style.transform=`scaleX(${k(t,27.95,28.8,E.expo)})`;
+  }
+
+  // arayüz
+  if(!RENDER){
+    $('clock').textContent=`${t.toFixed(1).padStart(4,'0')} / 30`;
+    $('bar').style.width=`${t/DUR*100}%`;
+    $$('#dots button').forEach((b,i)=>b.classList.toggle('on',sceneIdx(t)===i));
+  }
+}
+
+// ------------------------------------------------------------------ oynatma
+let T=0, playing=!RENDER, last=performance.now();
+function frame(now){
+  const dt=Math.min(.1,(now-last)/1000);last=now;
+  if(playing){T+=dt;if(T>=DUR){T=DUR;playing=false;syncBtn()}}
+  draw(T);
+  requestAnimationFrame(frame);
+}
+function syncBtn(){$('play').textContent=playing?'❚❚':'▶';$('play').setAttribute('aria-label',playing?'Duraklat':'Oynat')}
+function seek(t,play=true){T=clamp(t,0,DUR);playing=play;last=performance.now();syncBtn();draw(T)}
+
+layout();
+if(RENDER){
+  $('ctl').remove();$('bar').remove();
+  window.__seek=t=>{draw(t);return true};
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{draw(0);window.__ready=true});
+  return;
+}
+NAMES.forEach((n,i)=>{const b=document.createElement('button');b.setAttribute('aria-label',`${i+1}. sahne: ${n}`);b.title=n;b.onclick=()=>seek(S[i]);$('dots').appendChild(b)});
+$('play').onclick=()=>{if(!playing&&T>=DUR)seek(0);else{playing=!playing;last=performance.now();syncBtn()}};
+$('replay').onclick=()=>seek(0);
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();$('play').click()}else if(e.key==='r'||e.key==='R')seek(0);else if(/^[1-5]$/.test(e.key))seek(S[+e.key-1])});
+// kontroller hareketsiz kalınca kaybolur
+let idle;const wake=()=>{$('ctl').classList.remove('idle');clearTimeout(idle);idle=setTimeout(()=>{if(playing)$('ctl').classList.add('idle')},2600)};
+['pointermove','pointerdown','keydown'].forEach(ev=>addEventListener(ev,wake));wake();
+syncBtn();draw(0);requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
