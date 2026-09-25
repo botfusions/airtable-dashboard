@@ -1,22 +1,23 @@
-"""Reel v3 ses bandı: 128 BPM müzik + kesmelerle eşleşen ses efektleri (sadece numpy).
+"""Reel v3 ses bandı: BPM ortam değişkeni (varsayılan 90) müzik + kesmelerle eşleşen ses efektleri (sadece numpy).
 
-Müzik 64 vuruş (30 sn). Kick ilk vuruştan başlar; 52–55,75. vuruşlar kırılma
+Müzik 64 vuruş (90 BPM'de ~42,7 sn, 128 BPM'de 30 sn). Kick ilk vuruştan başlar; 52–55,75. vuruşlar kırılma
 (riser ve hızlanan trampet), 55,75–56 tam sessizlik, 56. vuruşta drop.
 Ses efektleri, sayfanın darbe listesinden (render.mjs CUES=cues.json) okunur,
 böylece her kesme ve darbe kendi sesini alır.
 
-Kullanım: python3 ses_v3.py cues.json cikti.wav [muzik_only.wav]
+Kullanım: [BPM=90] python3 ses_v3.py cues.json cikti.wav [muzik_only.wav]
 """
 import json
+import os
 import sys
 import wave
 
 import numpy as np
 
 SR = 48000
-BPM = 128
+BPM = float(os.environ.get('BPM', 90))
 BT = 60 / BPM
-TOTAL = 30.0
+TOTAL = 64 * BT
 N = int(TOTAL * SR)
 rng = np.random.default_rng(128)
 
@@ -274,7 +275,7 @@ def main():
         with wave.open(sys.argv[3], 'wb') as w:
             w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
             w.writeframes((m * 32767).astype('<i2').tobytes())
-    print(f'{out}: {len(cues)} ipucu, 128 BPM, drop {b(56):.2f} sn')
+    print(f'{out}: {len(cues)} ipucu, {BPM:g} BPM, {TOTAL:.2f} sn, drop {b(56):.2f} sn')
 
 
 if __name__ == '__main__':
