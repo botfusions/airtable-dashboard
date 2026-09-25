@@ -3,7 +3,8 @@
 Her patlama, fırlatma, ıslık, çıtırtı ve şelale sesi, sayfanın render sırasında
 kaydettiği zaman, kazanç ve pan değerleriyle yeniden üretilir. Ses gecikmesi
 (uzaklık / ses hızı) sayfada zaten hesaplandığı için burada eklenmez.
-Kullanım: python3 audio.py events.json cikti.wav [sure_sn]
+Kullanım: python3 audio.py events.json cikti.wav [sure_sn] [muzik.wav beats.json]
+Müzik verilirse fişek sesleri müzikle karıştırılır (music.py çıktısı).
 """
 import json
 import sys
@@ -142,11 +143,31 @@ def main():
     L = L + wetL * .55
     R = R + wetR * .55
     L, R = L[:n], R[:n]
-    # açılış/kapanış fade
     t = np.arange(n) / SR
     fade = np.minimum(1, t / 1.0) * np.clip((total - t) / .7, 0, 1)
-    st = np.stack([L * fade, R * fade], 1)
-    st = np.tanh(st / (np.percentile(np.abs(st), 99.95) + 1e-9) * .9) * .95
+    if len(sys.argv) > 5:
+        # müzikle karışım: fişek sesleri müziğin ~6 dB altında, kick'ten hafif kısılır
+        music_path, beats_path = sys.argv[4], sys.argv[5]
+        with wave.open(music_path) as w:
+            mu = np.frombuffer(w.readframes(w.getnframes()), '<i2').reshape(-1, 2) / 32767
+        mu = np.pad(mu, ((0, max(0, n - len(mu))), (0, 0)))[:n]
+        beats = json.load(open(beats_path))
+        duck = np.zeros(n)
+        tail = np.exp(-np.arange(int(.5 * SR)) / SR / .13)
+        for tk in beats['kicks']:
+            i = int(round(tk * SR))
+            seg = duck[i:i + len(tail)]
+            np.maximum(seg, tail[:len(seg)], out=seg)
+        s0, s1 = beats['silence']
+        gate = np.clip(np.maximum((s0 - t) / .005, (t - s1) / .005), 0, 1)
+        fx = np.stack([L, R], 1)
+        fx /= np.percentile(np.abs(fx), 99.9) + 1e-9
+        fx *= .5 * (1 - .3 * duck)[:, None]
+        st = (fx + mu) * (gate * np.clip((total - t) / .7, 0, 1))[:, None]
+        st = np.tanh(st * .9)
+    else:
+        st = np.stack([L * fade, R * fade], 1)
+        st = np.tanh(st / (np.percentile(np.abs(st), 99.95) + 1e-9) * .9) * .95
     st /= np.max(np.abs(st)) / .97
     pcm = (st * 32767).astype('<i2')
     with wave.open(out_path, 'wb') as w:
