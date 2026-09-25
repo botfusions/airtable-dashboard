@@ -5,9 +5,9 @@ import fs from 'fs'; import path from 'path'; import { once } from 'events';
 const FF = process.env.FFMPEG || 'ffmpeg';
 const FRAMES = +(process.env.FRAMES || 900), OUT = process.env.OUT || 'video_sessiz.mp4';
 const browser = await chromium.launch({ args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
-const page = await browser.newPage({ viewport:{width:1920,height:1080}, deviceScaleFactor:1 });
+const page = await browser.newPage({ viewport:process.env.VERTICAL?{width:1080,height:1920}:{width:1920,height:1080}, deviceScaleFactor:1 });
 page.on('pageerror', e=>console.log('[err]', e.message));
-await page.goto('file://'+path.resolve('index.html')+'?render=1');
+await page.goto('file://'+path.resolve('index.html')+(process.env.VERTICAL?'?render=1&v=1':'?render=1'));
 await page.waitForFunction(()=>window.__ready===true, null, {timeout:60000});
 const ff = spawn(FF, ['-y','-loglevel','error','-f','image2pipe','-framerate','30','-c:v','mjpeg','-i','-',
   '-c:v','libx264','-preset','slow','-crf','18','-pix_fmt','yuv420p','-tune','film','-movflags','+faststart',OUT], {stdio:['pipe','inherit','inherit']});
