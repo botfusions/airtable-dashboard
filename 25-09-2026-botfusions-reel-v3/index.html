@@ -42,8 +42,8 @@ button:focus-visible{outline:2px solid var(--p);outline-offset:2px}
 const PROOF={value:null,label:'BURAYA DOĞRULANMIŞ RAKAM'};
 
 const QS=new URLSearchParams(location.search), RENDER=QS.has('render');
-// ?land=1 → yatay 16:9 · ?bpm= → tempo (varsayılan 90; v3 ilk sürüm 128)
-const LAND=QS.has('land'),W=LAND?1920:1080,H=LAND?1080:1920,ASP=W/H,BPM=+(QS.get('bpm')||90),BT=60/BPM,DUR=64*BT,FPS=30;
+// ?land=1 → yatay 16:9 (canlı oynatmada yatay ekranda kendiliğinden) · ?bpm= → tempo (varsayılan 90; v3 ilk sürüm 128)
+const LAND=QS.has('land')||(!RENDER&&innerWidth>innerHeight),W=LAND?1920:1080,H=LAND?1080:1920,ASP=W/H,BPM=+(QS.get('bpm')||90),BT=60/BPM,DUR=64*BT,FPS=30;
 // SL: darbe/flaş sönümlerini tempoyla birlikte uzatır; LS: yatayda yazı ve küp yazılarını genişletir
 const SL=128/BPM,LS=LAND?1.45:1;
 const b=n=>n*BT;
