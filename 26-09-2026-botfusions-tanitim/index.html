@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Botfusions Tanıtım</title>
+<meta name="description" content="Ömer Cenk Tokgöz ve Botfusions'ı 30 saniyede anlatan zarif hareketli grafik: AI Ajan ve GEO hizmetleri.">
+<style>
+@font-face{font-family:"Archivo V";font-style:normal;font-weight:100 900;font-stretch:62% 125%;src:url(lib/archivo-latin-wdth-normal.woff2) format("woff2-variations");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Archivo V";font-style:normal;font-weight:100 900;font-stretch:62% 125%;src:url(lib/archivo-latin-ext-wdth-normal.woff2) format("woff2-variations");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"JB Mono";font-style:normal;font-weight:700;src:url(lib/jetbrains-mono-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"JB Mono";font-style:normal;font-weight:700;src:url(lib/jetbrains-mono-latin-ext-700-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+/* Tek görsel dünya: gece moru zemin, kemik rengi yazı, mor vurgu. Bilinçli olarak tek tema. */
+:root{--ink:#0E0B15;--bone:#EDE8DF;--v:#A855F7;--line:rgba(237,232,223,.16);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--ink);color:var(--bone);overflow:hidden;font-family:"JB Mono",ui-monospace,monospace}
+#cv{position:absolute;left:50%;top:50%;display:block;transform-origin:center}
+.ui{position:fixed;z-index:3;transition:opacity .5s}
+#start{inset:0;display:grid;place-items:center;background:rgba(14,11,21,.55);padding-inline:16px}
+#start button{font-size:15px;padding:16px 26px;background:var(--v);color:#0E0B15;min-height:52px}
+#start small{display:block;margin-top:14px;text-align:center;opacity:.7;font-size:12px;letter-spacing:.12em}
+#ctl{left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:6px;border-radius:999px;background:rgba(14,11,21,.8);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:calc(100vw - 32px)}
+#ctl.idle{opacity:0}
+button{appearance:none;border:0;background:transparent;color:var(--bone);font:700 13px/1 "JB Mono",ui-monospace,monospace;letter-spacing:.04em;padding:10px 13px;border-radius:999px;cursor:pointer;min-height:40px;white-space:nowrap}
+button:hover{background:rgba(237,232,223,.1)}
+button:focus-visible{outline:2px solid var(--v);outline-offset:2px}
+#play{background:var(--v);color:#0E0B15;min-width:44px}
+#clock{font-size:12px;opacity:.7;padding:0 8px;min-width:64px;font-variant-numeric:tabular-nums}
+.hidden{opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="cv" role="img" aria-label="Botfusions tanıtımı: Ömer Cenk Tokgöz, markaları yapay zekâ yanıtlarında görünür kılar. Ölç, optimize et, önerilen ol. botfusions.com"></canvas>
+<div id="start" class="ui"><div><button id="go">▶ Sesli oynat</button><small id="meta">30 SN · TANITIM</small></div></div>
+<div id="ctl" class="ui hidden"><button id="play" aria-label="Duraklat">❚❚</button><button id="replay">↺ Baştan</button><span id="clock">00.0 / 30</span><button id="mute">SES AÇIK</button></div>
+<script>
+(()=>{
+'use strict';
+// ====================================================================== ayarlar
+const QS=new URLSearchParams(location.search),RENDER=QS.has('render');
+// ?land=1 → yatay 16:9 (canlı oynatmada yatay ekranda kendiliğinden)
+const LAND=QS.has('land')||(!RENDER&&innerWidth>innerHeight);
+const W=LAND?1920:1080,H=LAND?1080:1920,BPM=96,BT=60/BPM,DUR=30,FPS=30;
+const C={ink:'#0E0B15',ink2:'#171223',bone:'#EDE8DF',mute:'rgba(237,232,223,.55)',soft:'rgba(237,232,223,.72)',faint:'rgba(237,232,223,.14)',v:'#A855F7',vd:'#7C3AED',lil:'#C9B8F5',gold:'#F5D46B'};
+const M=LAND?150:92;                       // sol kenar boşluğu
+const clamp=(x,a,c)=>x<a?a:x>c?c:x,lerp=(a,c,x)=>a+(c-a)*x,TAU=Math.PI*2;
+const E={lin:t=>t,out:t=>1-(1-t)**3,out5:t=>1-(1-t)**5,inout:t=>t<.5?4*t*t*t:1-(-2*t+2)**3/2,in:t=>t*t*t,
+  expo:t=>t>=1?1:1-2**(-10*t),back:t=>{const c1=1.4,c3=c1+1,u=t-1;return 1+c3*u*u*u+c1*u*u}};
+const k=(x,a,c,e=E.out)=>e(clamp((x-a)/(c-a),0,1));
+const b=n=>n*BT;
+
+// ====================================================================== tuval
+const cv=document.getElementById('cv');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+const fit=()=>{const s=RENDER?1:Math.min(innerWidth/W,innerHeight/H);cv.style.width=W+'px';cv.style.height=H+'px';cv.style.transform=`translate(-50%,-50%) scale(${s})`};fit();addEventListener('resize',fit);
+const FA='"Archivo V","Arial Black",Arial,sans-serif',FM='"JB Mono",ui-monospace,monospace';
+function font(size,{w=800,st='expanded',m=false}={}){x.font=`${m?700:w} ${size}px ${m?FM:FA}`;x.fontStretch=m?'normal':st;x.letterSpacing=m?`${(size*.14).toFixed(1)}px`:(st==='expanded'?`${(-size*.02).toFixed(1)}px`:'0px')}
+// en geniş satır maxW'ye sığana kadar küçült
+function fitSize(lines,size,maxW,o){let s=size;for(;s>20;s-=2){font(s,o);if(Math.max(...lines.map(l=>x.measureText(l).width))<=maxW)break}return s}
+
+// gren dokusu (sabit tohum)
+function mulberry(a){return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd=mulberry(26);
+const grain=document.createElement('canvas');grain.width=grain.height=256;{const g=grain.getContext('2d'),d=g.createImageData(256,256);
+  for(let i=0;i<d.data.length;i+=4){const v=rnd()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}g.putImageData(d,0,0)}
+let grainPat=null;
+
+// ====================================================================== yardımcılar
+// maske içinden yükselen yazı: p=giriş, q=çıkış (0..1)
+function rise(str,X,Y,size,o,p,q=0,col=C.bone,align='left'){
+  if(p<=0||q>=1)return;font(size,o);x.textAlign=align;x.textBaseline='alphabetic';
+  const top=Y-size*1.02,hgt=size*1.32,off=(1-E.out5(p))*size*1.15-E.in(q)*size*1.2;
+  x.save();x.beginPath();x.rect(-10,top,W+20,hgt);x.clip();x.fillStyle=col;x.fillText(str,X,Y+off);x.restore();
+}
+// kelime kelime yükselen satır
+function riseWords(str,X,Y,size,o,t0,lb,step=.12,q=0,colFn=()=>C.bone){
+  font(size,o);const words=str.split(' '),sp=x.measureText(' ').width;let cx=X;
+  words.forEach((w,i)=>{font(size,o);const ww=x.measureText(w).width;rise(w,cx,Y,size,o,k(lb,t0+i*step,t0+i*step+.9,E.lin),q,colFn(w,i));cx+=ww+sp});
+}
+// daktilo mono etiket
+function type(str,X,Y,size,p,col=C.mute,align='left',a=1){if(p<=0)return;const n=Math.round(str.length*clamp(p,0,1));font(size,{m:true});x.textAlign=align;x.textBaseline='alphabetic';x.globalAlpha=a;x.fillStyle=col;x.fillText(str.slice(0,n),X,Y);x.globalAlpha=1}
+function eyebrow(str,X,Y,lb,t0,q=0){const p=k(lb,t0,t0+.6,E.out);if(p<=0||q>=1)return;x.globalAlpha=1-q;
+  x.fillStyle=C.v;x.fillRect(X,Y-9,lerp(0,34,p),3);type(str,X+50,Y,LAND?22:24,k(lb,t0+.2,t0+1.1,E.lin),C.lil,'left',1-q);x.globalAlpha=1}
+function hline(x0,y0,x1,col,w=2,p=1,a=1){if(p<=0)return;x.globalAlpha=a;x.strokeStyle=col;x.lineWidth=w;x.beginPath();x.moveTo(x0,y0);x.lineTo(lerp(x0,x1,p),y0);x.stroke();x.globalAlpha=1}
+function rr(X,Y,w,h,r){x.beginPath();x.roundRect(X,Y,w,h,r)}
+
+// ====================================================================== arka plan: gece moru, kayan ışık, nokta ızgarası, gren
+const GLOW=[[.78,.22],[.2,.3],[.8,.7],[.5,.62],[.3,.5],[.5,.5]]; // sahne başına ışık konumu
+function background(t,lb){
+  x.fillStyle=C.ink;x.fillRect(0,0,W,H);
+  const si=sceneIdx(lb),nx=Math.min(si+1,GLOW.length-1),sp=SC[si],f=k(lb,sp[1]-1.5,sp[1],E.inout);
+  const gx=lerp(GLOW[si][0],GLOW[nx][0],f)*W+Math.sin(t*.35)*W*.03,gy=lerp(GLOW[si][1],GLOW[nx][1],f)*H+Math.cos(t*.3)*H*.03;
+  const R=Math.max(W,H)*.75,g=x.createRadialGradient(gx,gy,0,gx,gy,R);
+  const fin=k(lb,40,41.5,E.inout);
+  g.addColorStop(0,`rgba(124,58,237,${.34+fin*.16})`);g.addColorStop(.45,'rgba(76,29,149,.12)');g.addColorStop(1,'rgba(14,11,21,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+  // nokta ızgarası (yavaş kayar)
+  const gs=48,oy=(t*6)%gs;x.fillStyle='rgba(237,232,223,.075)';
+  for(let yy=-gs+oy;yy<H+gs;yy+=gs)for(let xx=gs/2;xx<W;xx+=gs)x.fillRect(xx-1,yy-1,2,2);
+}
+function grainPass(t){if(!grainPat)grainPat=x.createPattern(grain,'repeat');const f=Math.floor(t*FPS);
+  x.save();x.globalAlpha=.055;x.globalCompositeOperation='overlay';x.translate((f*97)%256,(f*57)%256);x.fillStyle=grainPat;x.fillRect(-256,-256,W+512,H+512);x.restore();
+  // vinyet
+  const v=x.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.45)');x.fillStyle=v;x.fillRect(0,0,W,H)}
+
+// ====================================================================== HUD: künye ve zaman kodu
+function hud(t,lb){
+  const a=k(lb,1,2.5)*(1-k(lb,47.6,48));if(a<=0)return;x.globalAlpha=a*.85;
+  const y=LAND?84:110;type('BOTFUSIONS',M,y,20,1,C.bone);
+  const lab=['','01 MERHABA','02 DEĞİŞİM','03 ÇÖZÜM','04 YÖNTEM','05 İLETİŞİM'][sceneIdx(lb)];
+  font(20,{m:true});x.textAlign='right';x.fillStyle=C.mute;x.fillText(lab,W-M,y);
+  const by=H-(LAND?70:120);x.fillStyle=C.faint;x.fillRect(M,by,W-2*M,2);x.fillStyle=C.v;x.fillRect(M,by,(W-2*M)*t/DUR,2);
+  font(18,{m:true});x.textAlign='right';x.fillStyle=C.mute;x.fillText(`00:${String(Math.floor(t)).padStart(2,'0')} / 00:30`,W-M,by-18);
+  x.textAlign='left';x.fillText('AI AJAN & GEO',M,by-18);x.globalAlpha=1;
+}
+
+// ====================================================================== sahneler (vuruş cinsinden; 96 BPM, 48 vuruş = 30 sn)
+const SC=[[0,6],[6,12],[12,20],[20,28],[28,40],[40,48.01]];
+const sceneIdx=lb=>{let i=0;SC.forEach((s,j)=>{if(lb>=s[0])i=j});return i};
+
+// 1 · Logo bir çizgiden doğar
+function s1(lb){
+  const cy=H*.5,x0=M,x1=W-M,q=k(lb,5,5.8,E.in);
+  const size=fitSize(['BOTFUSIONS'],LAND?210:150,x1-x0,{w:800});
+  font(size,{w:800});const bw=x.measureText('BOT').width;
+  const line=k(lb,.2,1.6,E.inout),retract=k(lb,5.2,6,E.inout);
+  hline(lerp(x0,x1,retract),cy+size*.28,x1,C.v,2,line);
+  rise('BOT',x0,cy,size,{w:800},k(lb,1,2.2,E.lin),q,C.bone);
+  rise('FUSIONS',x0+bw,cy,size,{w:800},k(lb,1.25,2.45,E.lin),q,C.v);
+  const p=k(lb,2.6,4.2,E.lin);x.globalAlpha=1-q;type('AI AJAN & GEO HİZMETLERİ',x0,cy+size*.28+58,LAND?26:28,p,C.lil);
+  font(LAND?26:28,{m:true});x.textAlign='right';x.fillStyle=C.mute;x.globalAlpha=k(lb,3.4,4.2)*(1-q);x.fillText('BOTFUSIONS.COM',x1,cy+size*.28+58);x.globalAlpha=1;
+}
+// 2 · Merhaba, ben Cenk.
+function s2(lb){
+  const q=k(lb,11.2,12,E.in),top=LAND?H*.43:H*.42,mw=W-2*M;
+  const s1z=fitSize(['Ben Cenk.'],LAND?200:190,mw,{w:800});
+  eyebrow('MERHABA',M,top-s1z*1.02-44,lb,6.2,q);
+  riseWords('Ben Cenk.',M,top,s1z,{w:800},6.5,lb,.22,q,w=>w==='Cenk.'?C.v:C.bone);
+  const s2z=fitSize(['Markaları yapay zekâda','görünür kılıyorum.'],LAND?78:74,mw,{w:600,st:'normal'});
+  riseWords('Markaları yapay zekâda',M,top+s2z*1.9,s2z,{w:600,st:'normal'},7.6,lb,.1,q);
+  riseWords('görünür kılıyorum.',M,top+s2z*3.05,s2z,{w:600,st:'normal'},8.0,lb,.1,q,w=>w==='görünür'?C.lil:C.bone);
+  const yy=top+s2z*3.05+(LAND?120:140);
+  hline(M,yy-44,M+lerp(0,LAND?560:mw,1),C.faint,2,k(lb,8.6,9.8,E.inout),1-q);
+  x.globalAlpha=1-q;type('ÖMER CENK TOKGÖZ',M,yy,LAND?26:30,k(lb,9,10,E.lin),C.bone);type('KURUCU · BOTFUSIONS',M,yy+(LAND?42:48),LAND?22:24,k(lb,9.5,10.5,E.lin),C.mute);x.globalAlpha=1;
+}
+// 3 · Müşterilerin artık yapay zekâya soruyor + sohbet kartı
+function s3(lb){
+  const q=k(lb,19.2,20,E.in),mw=LAND?W*.44:W-2*M,top=LAND?H*.4:H*.24;
+  const sz=fitSize(['Müşterilerin artık','yapay zekâya','soruyor.'],LAND?104:116,mw,{w:800});
+  eyebrow('DEĞİŞEN ŞEY',M,top-sz*1.02-44,lb,12.2,q);
+  ['Müşterilerin artık','yapay zekâya','soruyor.'].forEach((l,i)=>riseWords(l,M,top+i*sz*1.08,sz,{w:800},12.5+i*.35,lb,.1,q,w=>i===1?C.v:C.bone));
+  // kart
+  const cw=LAND?W*.36:W-2*M,ch=LAND?560:640,cx=LAND?W-M-cw:M,cyy=LAND?(H-ch)/2+10:H*.5;
+  const ap=k(lb,13.6,14.6,E.out5);if(ap<=0)return;
+  x.save();x.globalAlpha=(1-q);x.translate(0,(1-ap)*60-E.in(q)*40);
+  rr(cx,cyy,cw,ch,28);x.fillStyle='rgba(23,18,35,.92)';x.fill();x.strokeStyle=C.faint;x.lineWidth=2;x.stroke();
+  // başlık çubuğu
+  x.fillStyle=C.v;x.beginPath();x.arc(cx+44,cyy+50,7,0,TAU);x.fill();type('AI ASİSTAN',cx+64,cyy+58,20,1,C.mute);
+  hline(cx,cyy+92,cx+cw,C.faint,2,1);
+  // soru balonu (daktilo)
+  const qs='Ankara\'da en iyi diş kliniği hangisi?',qp=k(lb,14.4,15.6,E.lin);
+  font(LAND?30:34,{w:500,st:'normal'});const qw=Math.min(cw-100,x.measureText(qs).width+56),qh=LAND?68:76;
+  rr(cx+cw-40-qw,cyy+124,qw,qh,[22,22,6,22]);x.fillStyle=C.vd;x.fill();x.fillStyle=C.bone;x.textAlign='left';x.textBaseline='middle';
+  const qn=Math.round(qs.length*qp);x.fillText(qs.slice(0,qn)+(qp<1&&Math.floor(lb*4)%2?'|':''),cx+cw-40-qw+28,cyy+124+qh/2+2);x.textBaseline='alphabetic';
+  // yanıt satırları
+  const rows=['Klinik A','Klinik B','Klinik C'],ry=cyy+124+qh+54,rh=LAND?74:86;
+  type('ÖNERİLENLER',cx+40,ry-14,18,k(lb,15.7,16.2,E.lin),C.mute);
+  rows.forEach((r,i)=>{const p=k(lb,16+i*.3,16.6+i*.3,E.out5);if(p<=0)return;const y=ry+i*(rh+14)+(1-p)*24;x.globalAlpha=p*(1-q);
+    rr(cx+40,y,cw-80,rh,16);x.fillStyle='rgba(237,232,223,.06)';x.fill();
+    font(LAND?28:32,{w:600,st:'normal'});x.textBaseline='middle';x.fillStyle=C.mute;x.fillText(String(i+1),cx+70,y+rh/2+2);x.fillStyle=C.bone;x.fillText(r,cx+118,y+rh/2+2);x.textBaseline='alphabetic'});
+  // boş yer: senin markan?
+  const ep=k(lb,17.2,17.8,E.out5);if(ep>0){const y=ry+3*(rh+14),pulse=.5+.5*Math.sin(lb*Math.PI);x.globalAlpha=ep*(1-q);
+    rr(cx+40,y,cw-80,rh,16);x.setLineDash([12,10]);x.lineWidth=2.5;x.strokeStyle=`rgba(168,85,247,${.55+.45*pulse})`;x.stroke();x.setLineDash([]);
+    font(LAND?28:32,{w:700,st:'normal'});x.textBaseline='middle';x.fillStyle=C.v;x.fillText('Senin markan?',cx+118,y+rh/2+2);x.fillStyle=C.mute;x.fillText('—',cx+70,y+rh/2+2);x.textBaseline='alphabetic'}
+  x.restore();x.globalAlpha=1;
+}
+// 4 · Ne yapıyorum: yörünge diyagramı
+function s4(lb){
+  const q=k(lb,27.2,28,E.in),mw=LAND?W*.44:W-2*M,top=LAND?H*.42:H*.24;
+  const L=['Markanı AI','yanıtlarına','taşıyorum.'],sz=fitSize(L,LAND?104:116,mw,{w:800});
+  eyebrow('NE YAPIYORUM',M,top-sz*1.02-44,lb,20.2,q);
+  L.forEach((l,i)=>riseWords(l,M,top+i*sz*1.08,sz,{w:800},20.5+i*.35,lb,.1,q,w=>i===2?C.v:C.bone));
+  x.globalAlpha=1-q;type('ChatGPT · Claude · Perplexity · Gemini · Google AI',M,top+2*sz*1.08+(LAND?80:90),LAND?20:22,k(lb,22,23.5,E.lin),C.mute);x.globalAlpha=1;
+  // diyagram
+  const ox=LAND?W*.73:W/2,oy=LAND?H*.5:H*.68,R=LAND?300:360,ap=k(lb,21,22.5,E.inout);if(ap<=0)return;
+  x.save();x.globalAlpha=1-q;
+  // yörüngeler
+  [[1,.42,-.18],[.72,.3,.35]].forEach(([s,f,rot],j)=>{x.save();x.translate(ox,oy);x.rotate(rot);x.strokeStyle=j?C.faint:'rgba(201,184,245,.28)';x.lineWidth=2;
+    x.beginPath();x.ellipse(0,0,R*s,R*s*f*1.6,0,-Math.PI/2,-Math.PI/2+TAU*ap);x.stroke();x.restore()});
+  // merkez
+  const cp=k(lb,21.6,22.6,E.back),pulse=k(lb,23,28)>0?.5+.5*Math.sin(lb*Math.PI):0;
+  const g=x.createRadialGradient(ox,oy,0,ox,oy,120);g.addColorStop(0,`rgba(168,85,247,${.55+.2*pulse})`);g.addColorStop(1,'rgba(168,85,247,0)');x.fillStyle=g;x.beginPath();x.arc(ox,oy,120,0,TAU);x.fill();
+  x.fillStyle=C.v;x.beginPath();x.arc(ox,oy,56*cp,0,TAU);x.fill();
+  if(cp>.5){font(20,{m:true});x.textAlign='center';x.fillStyle=C.ink;x.textBaseline='middle';x.fillText('MARKAN',ox,oy+1);x.textBaseline='alphabetic'}
+  // motorlar yörüngede
+  const eng=['ChatGPT','Claude','Perplexity','Gemini'];
+  eng.forEach((n,i)=>{const orb=i%2?[.72,.3,.35]:[1,.42,-.18],a0=i*TAU/4+.5+lb*.12,rx=R*orb[0],ry=rx*orb[1]*1.6/orb[0]*orb[0];
+    const ex=Math.cos(a0)*rx,ey=Math.sin(a0)*R*orb[0]*orb[1]*1.6,cs=Math.cos(orb[2]),sn=Math.sin(orb[2]),px=ox+ex*cs-ey*sn,py=oy+ex*sn+ey*cs;
+    const pp=k(lb,22.4+i*.25,23+i*.25,E.back);if(pp<=0)return;
+    const link=k(lb,24+i*.7,24.6+i*.7,E.inout);
+    if(link>0){x.strokeStyle=C.v;x.lineWidth=2;x.globalAlpha=(1-q)*.9;x.beginPath();x.moveTo(px,py);x.lineTo(lerp(px,ox,link),lerp(py,oy,link));x.stroke();x.globalAlpha=1-q}
+    font(LAND?24:26,{w:700,st:'normal'});const tw=x.measureText(n).width,pw=tw+(link>=1?84:44),ph=LAND?50:56;
+    x.save();x.translate(px,py);x.scale(pp,pp);rr(-pw/2,-ph/2,pw,ph,ph/2);x.fillStyle=link>=1?C.v:'rgba(23,18,35,.95)';x.fill();x.strokeStyle=link>=1?C.v:'rgba(201,184,245,.4)';x.lineWidth=2;x.stroke();
+    x.fillStyle=link>=1?C.ink:C.bone;x.textAlign='left';x.textBaseline='middle';x.fillText(n,-pw/2+22,1);if(link>=1){x.fillText('✓',pw/2-44,1)}x.textBaseline='alphabetic';x.restore()});
+  x.restore();x.globalAlpha=1;
+}
+// 5 · Yöntem: 3 adım
+const STEPS=[['Ölç','AI motorlarında markanın','görünürlüğünü ölçerim.'],['Optimize et','Teknik altyapı ve özgün','veriyle içerik kurarım.'],['Önerilen ol','Güvenilir kaynaklarla','birlikte anılmanı sağlarım.']];
+function s5(lb){
+  const q=k(lb,39.2,40,E.in);
+  const hy=LAND?H*.3:H*.2;
+  const hs=fitSize(['Üç adımda görünürlük.'],LAND?92:84,W-2*M,{w:800});
+  eyebrow('YÖNTEM · AI VISIBILITY',M,hy-hs*1.02-44,lb,28.2,q);
+  riseWords('Üç adımda görünürlük.',M,hy,hs,{w:800},28.4,lb,.1,q,w=>w==='görünürlük.'?C.v:C.bone);
+  x.save();x.globalAlpha=1-q;
+  if(LAND){
+    const ly=H*.5,x0=M+10,x1=W-M-10,span=(x1-x0);
+    hline(x0,ly,x1,C.faint,2,k(lb,29,30.5,E.inout));
+    const prog=k(lb,29.6,37.4,E.inout);hline(x0,ly,x1,C.v,3,prog);
+    STEPS.forEach((s,i)=>{const nx=x0+span*(i/3)+10,t0=29.8+i*2.6,p=k(lb,t0,t0+.6,E.back);if(p<=0)return;
+      node(nx,ly,p,lb,t0,i);
+      const tx=nx-6,ty=ly+130,ts=fitSize(STEPS.map(z=>z[0]),70,span/3-60,{w:800});rise(s[0],tx,ty,ts,{w:800},k(lb,t0+.2,t0+1,E.lin),0,C.bone);
+      rise(s[1],tx,ty+62,30,{w:500,st:'normal'},k(lb,t0+.6,t0+1.4,E.lin),0,C.soft);rise(s[2],tx,ty+104,30,{w:500,st:'normal'},k(lb,t0+.8,t0+1.6,E.lin),0,C.soft)});
+  }else{
+    const lx=M+26,y0=H*.33,gap=H*.19;
+    x.strokeStyle=C.faint;x.lineWidth=2;x.beginPath();x.moveTo(lx,y0);x.lineTo(lx,y0+k(lb,29,30.5,E.inout)*gap*2.2);x.stroke();
+    x.strokeStyle=C.v;x.lineWidth=3;x.beginPath();x.moveTo(lx,y0);x.lineTo(lx,y0+k(lb,29.6,37.4,E.inout)*gap*2.2);x.stroke();
+    STEPS.forEach((s,i)=>{const ny=y0+i*gap,t0=29.8+i*2.6,p=k(lb,t0,t0+.6,E.back);if(p<=0)return;
+      node(lx,ny,p,lb,t0,i);
+      const tx=lx+80;rise(s[0],tx,ny+30,92,{w:800},k(lb,t0+.2,t0+1,E.lin),0,C.bone);
+      rise(s[1],tx,ny+100,36,{w:500,st:'normal'},k(lb,t0+.6,t0+1.4,E.lin),0,C.soft);rise(s[2],tx,ny+148,36,{w:500,st:'normal'},k(lb,t0+.8,t0+1.6,E.lin),0,C.soft)});
+  }
+  x.restore();x.globalAlpha=1;
+}
+function node(nx,ny,p,lb,t0,i){
+  const ring=k(lb,t0,t0+1.4,E.out);x.strokeStyle=`rgba(168,85,247,${(1-ring)*.8})`;x.lineWidth=2;x.beginPath();x.arc(nx,ny,26+ring*60,0,TAU);x.stroke();
+  x.fillStyle=C.ink;x.beginPath();x.arc(nx,ny,26*p,0,TAU);x.fill();x.strokeStyle=C.v;x.lineWidth=3;x.stroke();
+  if(p>.6){font(18,{m:true});x.textAlign='center';x.textBaseline='middle';x.fillStyle=C.bone;x.fillText(String(i+1).padStart(2,'0'),nx+1,ny+1);x.textBaseline='alphabetic';x.textAlign='left'}
+}
+// 6 · Kapanış
+function s6(lb){
+  const mw=W-2*M,cy=LAND?H*.46:H*.47;
+  const size=fitSize(['BOTFUSIONS'],LAND?230:156,mw,{w:800});font(size,{w:800});const bw=x.measureText('BOT').width;
+  hline(M,cy+size*.28,W-M,C.faint,2,k(lb,40.2,41.6,E.inout));
+  rise('BOT',M,cy,size,{w:800},k(lb,40.3,41.5,E.lin),0,C.bone);
+  rise('FUSIONS',M+bw,cy,size,{w:800},k(lb,40.55,41.75,E.lin),0,C.v);
+  // yavaş parıltı: harflerin üstünden geçen ışık bandı
+  const sh=((lb-42)/6)%1;if(lb>42){x.save();x.beginPath();x.rect(M,cy-size,mw,size*1.25);x.clip();const gx=lerp(M-300,W-M+300,sh),g=x.createLinearGradient(gx-160,0,gx+160,0);
+    g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,.18)');g.addColorStop(1,'rgba(255,255,255,0)');x.globalCompositeOperation='source-atop';x.fillStyle=g;x.fillRect(M,cy-size,mw,size*1.3);x.restore()}
+  const ts=LAND?64:62,ty=cy+size*.28+ts+(LAND?60:70);
+  const tag='AI yanıtlarında görünür ol.';riseWords(tag,M,ty,ts,{w:600,st:'normal'},41.6,lb,.1,0,w=>(w==='görünür'||w==='ol.')?C.bone:C.mute);
+  // altın vurgu: "görünür ol." altına çizgi
+  font(ts,{w:600,st:'normal'});const pre=x.measureText('AI yanıtlarında ').width,uw=x.measureText('görünür ol.').width;
+  hline(M+pre,ty+18,M+pre+uw,C.gold,4,k(lb,43,44,E.inout));
+  // iletişim
+  const py=ty+(LAND?110:130),pp=k(lb,43.6,44.4,E.out5);if(pp>0){font(LAND?30:34,{m:true});const u='botfusions.com',uw2=x.measureText(u).width+72,ph=LAND?70:78;
+    x.globalAlpha=pp;x.save();x.translate(0,(1-pp)*20);rr(M,py,uw2,ph,ph/2);x.strokeStyle=C.bone;x.lineWidth=2;x.stroke();x.fillStyle=C.bone;x.textAlign='left';x.textBaseline='middle';x.fillText(u,M+36,py+ph/2+2);x.textBaseline='alphabetic';x.restore();x.globalAlpha=1}
+  const cr=LAND?[W-M,py+(LAND?44:0),'right']:[M,py+(LAND?0:170),'left'];
+  type('ÖMER CENK TOKGÖZ',cr[0],cr[1],LAND?24:26,k(lb,44.4,45.4,E.lin),C.bone,cr[2]);
+  type('AI AJAN & GEO HİZMETLERİ',cr[0],cr[1]+(LAND?38:42),LAND?20:22,k(lb,44.8,45.8,E.lin),C.mute,cr[2]);
+}
+
+// ====================================================================== kare çizimi
+const SCENES=[s1,s2,s3,s4,s5,s6];
+function render(t){
+  t=clamp(t,0,DUR-1e-4);const lb=t/BT;
+  x.setTransform(1,0,0,1,0,0);x.globalAlpha=1;x.globalCompositeOperation='source-over';
+  background(t,lb);
+  // sahne geçişleri üst üste binebilir: önceki sahnenin çıkışı bir sonrakinin girişiyle kesişir
+  SC.forEach((s,i)=>{if(lb>=s[0]-.01&&lb<s[1]+.01)SCENES[i](lb)});
+  hud(t,lb);grainPass(t);
+  // açılış ve kapanışta yumuşak kararma
+  const fin=1-k(t,0,.35,E.lin);if(fin>0){x.fillStyle=`rgba(0,0,0,${fin})`;x.fillRect(0,0,W,H)}
+}
+
+// ====================================================================== başlat
+async function init(){
+  const fl=await Promise.all(['800 100px "Archivo V"','700 40px "JB Mono"'].map(s=>document.fonts.load(s,'ŞİĞÜÖÇÂşığüöç✓·'))).catch(()=>[[]]);
+  return fl.every(a=>a&&a.length>0);
+}
+if(RENDER){
+  document.querySelectorAll('.ui').forEach(e=>e.remove());
+  init().then(ok=>{window.__fontsOk=ok;render(0);window.__ready=true});
+  window.__frame=i=>{render(i/FPS);return cv.toDataURL('image/jpeg',.94)};
+  return;
+}
+let T0=0,playing=false,last=performance.now(),muted=false,started=false;
+const $=id=>document.getElementById(id);
+const mus=new Audio('muzik.mp3');mus.preload='auto';
+const musicAt=t=>{try{mus.currentTime=t;mus.muted=muted;const p=mus.play();if(p)p.catch(()=>{})}catch(e){}};
+const syncBtn=()=>{$('play').textContent=playing?'❚❚':'▶';$('play').setAttribute('aria-label',playing?'Duraklat':'Oynat')};
+const seek=t=>{T0=clamp(t,0,DUR);playing=true;last=performance.now();syncBtn();musicAt(T0)};
+$('meta').textContent=`30 SN · ${LAND?'16:9':'9:16'} · TANITIM`;
+$('go').onclick=()=>{started=true;$('start').classList.add('hidden');$('ctl').classList.remove('hidden');seek(0)};
+$('play').onclick=()=>{if(!playing&&T0>=DUR-.05){seek(0);return}playing=!playing;last=performance.now();syncBtn();if(playing)musicAt(T0);else mus.pause()};
+$('replay').onclick=()=>seek(0);
+$('mute').onclick=()=>{muted=!muted;mus.muted=muted;$('mute').textContent=muted?'SES KAPALI':'SES AÇIK'};
+addEventListener('keydown',e=>{if(!started)return;if(e.code==='Space'){e.preventDefault();$('play').click()}else if(e.key==='r'||e.key==='R')seek(0)});
+let idle;const wake=()=>{$('ctl').classList.remove('idle');clearTimeout(idle);idle=setTimeout(()=>{if(playing)$('ctl').classList.add('idle')},2600)};['pointermove','pointerdown','keydown'].forEach(ev=>addEventListener(ev,wake));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.1,(now-last)/1000);last=now;
+  if(playing){const live=!mus.paused&&!mus.ended&&mus.readyState>=2;T0=live?mus.currentTime:T0+dt;if(T0>=DUR){T0=DUR;playing=false;syncBtn()}}
+  render(started?T0:(reduce?DUR:DUR-.01));$('clock').textContent=`${Math.min(T0,DUR).toFixed(1).padStart(4,'0')} / 30`}
+// başlamadan önce son kare (afiş) görünür
+init().then(()=>{syncBtn();requestAnimationFrame(loop)});
+})();
+</script>
+</body>
+</html>
